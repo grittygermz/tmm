@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,7 +6,9 @@ import java.nio.file.Paths;
 public class FileOperations {
     public void removeFile(String filename) {
         try {
-            Files.delete(Paths.get(filename));
+            Path path = Paths.get(filename);
+            System.out.println(path.toFile().getPath());
+            Files.delete(path);
             System.out.println("deleted " + filename);
         } catch (IOException e) {
             System.out.println(e.getMessage());
