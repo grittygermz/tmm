@@ -7,7 +7,7 @@ public class FileOperations {
     public void removeFile(String filename) {
         try {
             Path path = Paths.get(filename);
-            System.out.println(path.toFile().getPath());
+            System.out.println(path.toAbsolutePath().toFile().getPath());
             Files.delete(path);
             System.out.println("deleted " + filename);
         } catch (IOException e) {
