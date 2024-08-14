@@ -1,26 +1,25 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileOperations {
     public void removeFile(String filename) {
-        File file = new File(filename);
-        if (file.delete()) {
-            System.out.println("Deleted the file: " + file.getName());
-        } else {
-            System.out.println("Failed to delete the file.");
+        try {
+            Files.delete(Paths.get(filename));
+            System.out.println("deleted " + filename);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
     public void createFile(String filename) {
-        File file = new File(filename);
         try {
-            boolean newFile = file.createNewFile();
-            if(newFile) {
-                System.out.println("file created " + filename);
-            } else {
-                System.out.println("failed to create " + filename);
-            }
+            Files.createFile(Paths.get(filename));
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
