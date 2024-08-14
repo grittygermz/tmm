@@ -1,10 +1,17 @@
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("started");
 
-        FileOperations fileOperations = new FileOperations();
+        FileOperations fileOperations;
+        try {
+            fileOperations = new FileOperations();
+        } catch (URISyntaxException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
         fileOperations.removeFile("jobDetails.json");
         fileOperations.removeFile("jobSeq.json");
 

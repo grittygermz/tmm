@@ -6,28 +6,30 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileOperations {
+
+    private final String jarDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation()
+            .toURI()).getParentFile().getPath();
+
+    public FileOperations() throws URISyntaxException {
+    }
+
     public void removeFile(String filename) {
         try {
-            Path path = Paths.get(filename);
+            System.out.println(jarDir);
+            Path path = Paths.get(jarDir, filename);
             System.out.println(path.toAbsolutePath().toFile().getPath());
-
-            String path1 = new File(Main.class.getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).getPath();
-            System.out.println(path1);
 
             Files.delete(path);
             System.out.println("deleted " + filename);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
     public void createFile(String filename) {
         try {
-            Files.createFile(Paths.get(filename));
+            Files.createFile(Paths.get(jarDir, filename));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
