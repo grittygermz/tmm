@@ -12,6 +12,7 @@ public class Main {
         System.out.println("waiting for input");
         String s = scanner.nextLine();
         fileOperations.removeFile("jobSeq.json");
+        fileOperations.createFile("jobSeqUpd.json");
         System.out.println(s);
     }
 
