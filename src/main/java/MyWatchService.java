@@ -22,7 +22,7 @@ public class MyWatchService {
         System.out.println(jarDir);
         Path path = Paths.get(jarDir);
         WatchService watchService = FileSystems.getDefault().newWatchService();
-        path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+        path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.OVERFLOW);
 
         int timeoutLen = 10;
         WatchKey key;
