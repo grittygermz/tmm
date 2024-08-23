@@ -20,9 +20,9 @@ public class Main {
         //fileOperations.removeFile("jobDetails.json");
         //fileOperations.removeFile("jobSeq.json");
 
-        //Scanner scanner = new Scanner(System.in);
-        //System.out.println("waiting for input");
-        //String s = scanner.nextLine();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("waiting for input to terminate");
+        String s = scanner.nextLine();
         //fileOperations.removeFile("jobSeq.json");
         //fileOperations.createFile("jobSeqUpd.json");
         //System.out.println(s);

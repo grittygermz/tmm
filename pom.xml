@@ -20,10 +20,10 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.dizitart</groupId>
-      <artifactId>nitrite</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.dizitart</groupId>-->
+<!--      <artifactId>nitrite</artifactId>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
@@ -31,11 +31,11 @@
       <version>2.0.31</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-oxm</artifactId>
-      <version>6.1.11</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.springframework</groupId>-->
+<!--      <artifactId>spring-oxm</artifactId>-->
+<!--      <version>6.1.11</version>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
@@ -67,6 +67,12 @@
       <version>3.3.2</version>
       <scope>compile</scope>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.slf4j</groupId>-->
+<!--      <artifactId>slf4j-api</artifactId>-->
+<!--      <version>2.0.16</version>-->
+<!--    </dependency>-->
+
 
 
 
@@ -83,21 +89,46 @@
 
   <build>
     <plugins>
+<!--      <plugin>-->
+<!--        &lt;!&ndash; Build an executable JAR &ndash;&gt;-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-jar-plugin</artifactId>-->
+<!--        <version>3.1.0</version>-->
+<!--        <configuration>-->
+<!--          <archive>-->
+<!--            <manifest>-->
+<!--              <addClasspath>true</addClasspath>-->
+<!--              <classpathPrefix>lib/</classpathPrefix>-->
+<!--              <mainClass>Main</mainClass>-->
+<!--            </manifest>-->
+<!--          </archive>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
+
       <plugin>
-        <!-- Build an executable JAR -->
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>Main</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>Main</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
+
+
   </build>
 </project>
