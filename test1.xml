@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pet shop="cing-de-pom">
+    <name>ginro</name>
+    <age>3</age>
+    <petChild>
+        <petchildchild toys="sally toy">
+            <chewies>chewy1</chewies>
+            <count>4</count>
+            <createdTime>2024-08-28 16:12</createdTime>
+            <dateOnly>20240828</dateOnly>
+        </petchildchild>
+        <petchildchild toys="elephant">
+            <chewies>chewy2</chewies>
+            <count>2</count>
+            <createdTime>2024-08-28 13:12</createdTime>
+            <dateOnly>20240828</dateOnly>
+        </petchildchild>
+    </petChild>
+</pet>
