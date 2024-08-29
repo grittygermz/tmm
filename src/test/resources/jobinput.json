@@ -6,7 +6,7 @@
   "date": "20240826",
   "versionNum": 1,
   "seqNumStart": 1,
-  "seqNumEnd": 100,
+  "seqNumEnd": 2,
   "maxFolderSizeMB": 2,
   "maxDataFiles": 5,
   "gpn": "43688280",

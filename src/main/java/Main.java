@@ -1,9 +1,4 @@
-import ch.qos.logback.classic.Level;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.table.TableUtils;
 import compute.ComputeService;
 import compute.PDFService;
 import compute.model.ArchiveFolder;
@@ -14,9 +9,6 @@ import json.JobInput;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import org.apache.commons.text.StringSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sqlite.ArchiveRepository;
 import sqlite.models.ArchivePack;
 import sqlite.models.ArchiveSeq;
@@ -52,13 +44,14 @@ public class Main {
 
         // read the input file
         //TODO change the path to jarDir
-        //"src/test/resources/jobInput.json"
+        //jarDir = "src/test/resources";
         ObjectMapper objectMapper = ArchivingObjectMapper.getInstance();
         JobInput jobInput = null;
         try {
             jobInput = objectMapper.readValue(new File(jarDir, "jobInput.json"), JobInput.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error(Arrays.toString(e.getStackTrace()));
+            terminate();
         }
         log.info("jobinput received {}", jobInput);
 
@@ -74,7 +67,7 @@ public class Main {
         if (latestSeqNumToUse == 0) {
             latestSeqNumToUse = jobInput.getSeqNumStart();
         }
-        if (latestSeqNumToUse >= jobInput.getSeqNumEnd()) {
+        if (latestSeqNumToUse > jobInput.getSeqNumEnd()) {
             log.error("next seq number [{}] to use exceeds the max allowable of [{}] from jobinput",
                     latestSeqNumToUse, jobInput.getSeqNumEnd());
             terminate();
@@ -104,6 +97,17 @@ public class Main {
         List<ArchiveFolder> archiveFolders = computeService.organizeFilesIntoFolders();
         log.info("completed assigning files to their respective folders");
         log.info("num of sequence numbers to be used = {}", archiveFolders.size());
+
+        //TODO check if remaining sequence numbers is sufficient to be used
+        if(latestSeqNumToUse + archiveFolders.size() - 1 > jobInput.getSeqNumEnd()) {
+            log.error("job requires [{}] seq nums to proceed. last seq num that will be produced is [{}] which will exceed " +
+                    "the max provided of [{}], only [{}] seq nums are available",
+                    archiveFolders.size(),
+                    latestSeqNumToUse + archiveFolders.size() - 1,
+                    jobInput.getSeqNumEnd(),
+                    jobInput.getSeqNumEnd() - latestSeqNumToUse + 1);
+            terminate();
+        }
 
 
         //start of output creation
@@ -166,10 +170,12 @@ public class Main {
                 counter++;
             }
 
+            //TODO create as function in xmlservice?
             String metafilename = stringTemplater.getMetafileName();
             log.info("creating metafile {}", outputFolderPath.resolve(metafilename).toAbsolutePath());
             xmlService.createXmlFile(FileType.Meta, outputFolderPath.resolve(metafilename).toFile());
 
+            //TODO create as function in xmlservice?
             BasicFileAttributes basicFileAttributes;
             try {
                 basicFileAttributes = Files.readAttributes(outputFolderPath.resolve(metafilename), BasicFileAttributes.class);
@@ -182,6 +188,7 @@ public class Main {
                 terminate();
             }
 
+            //TODO create as function in xmlservice?
             String controlfilename = stringTemplater.getControlfileName();
             try {
                 log.info("creating controlfile {}", outputFolderPath.resolve(controlfilename).toAbsolutePath());
@@ -191,6 +198,7 @@ public class Main {
                 terminate();
             }
 
+            //TODO create as function in main?
             //do zipping
             File zipFile = Paths.get(jobInput.getArchiveFilesPath()).getParent()
                     .resolve(stringTemplater.getZipName()).toFile();
@@ -218,6 +226,7 @@ public class Main {
         log.info("removing input folder {}", jobInput.getArchiveFilesPath());
         removeDir(Paths.get(jobInput.getArchiveFilesPath()));
 
+        //TODO create as function in main?
         archivePack.setEndTime(new Date());
         archivePack.setSeqEnd(--latestSeqNumToUse);
         archiveRepository.updateArchivePackEntry(archivePack);
@@ -225,18 +234,19 @@ public class Main {
         terminate();
     }
 
-    private static String getCurrentTime() {
+    public static String getCurrentTime() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HHmmss");
         return LocalTime.now(ZoneOffset.UTC).format(dtf);
     }
 
-    private static void terminate() {
+    public static void terminate() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("waiting for input to terminate");
         scanner.nextLine();
+        System.exit(0);
     }
 
-    private static void removeDir(Path dirPath) {
+    public static void removeDir(Path dirPath) {
         try(Stream<Path> walk = Files.walk(dirPath)) {
             walk.sorted(Comparator.reverseOrder())
                     .forEach(f -> {

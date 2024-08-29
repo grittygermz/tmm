@@ -1,26 +1,44 @@
 <configuration>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+<!--        <withJansi>true</withJansi>-->
+<!--        <encoder>-->
+<!--            <pattern>%yellow(%d{HH:mm:ss.SSS}) %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>-->
+<!--        </encoder>-->
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_FILE_DIR}/archiving.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
         <encoder>
             <pattern>%yellow(%d{HH:mm:ss.SSS}) %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
         </encoder>
     </appender>
 
-<!--    <appender name="file" class="ch.qos.logback.core.FileAppender">-->
-<!--        <file>./logback.log</file>-->
-<!--        <append>true</append>-->
-<!--        <immediateFlush>true</immediateFlush>-->
-<!--        <encoder>-->
-<!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
-<!--        </encoder>-->
-<!--    </appender>-->
+    <appender name="rollingfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_DIR}/archiving.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_FILE_DIR}/archiving.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
 
-<!--    <logger name="com.sematext">-->
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>20MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--    <logger name="com.sematext">-->
 <!--        <appender-ref ref="console"/>-->
 <!--    </logger>-->
 
     <root level="debug">
         <appender-ref ref="console" />
-<!--        <appender-ref ref="file"/>-->
+        <appender-ref ref="rollingfile"/>
     </root>
 </configuration>
