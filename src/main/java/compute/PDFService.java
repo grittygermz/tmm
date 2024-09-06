@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Slf4j
 public class PDFService {
@@ -22,6 +21,9 @@ public class PDFService {
                     di.getCustomMetadataValue("BCNR"));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        if(!InputValidator.validatePDFMetadata(pdfMetadata)) {
+            throw new RuntimeException(pdfMetadata + " has failed input validation for length");
         }
         log.debug("extracted metadata from pdf {}", pdfMetadata);
 

@@ -1,7 +1,7 @@
 <configuration>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%thread %d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
 <!--        <withJansi>true</withJansi>-->
 <!--        <encoder>-->
@@ -29,7 +29,7 @@
             <totalSizeCap>20MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%thread %d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -37,7 +37,7 @@
 <!--        <appender-ref ref="console"/>-->
 <!--    </logger>-->
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="console" />
         <appender-ref ref="rollingfile"/>
     </root>

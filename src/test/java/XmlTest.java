@@ -14,7 +14,11 @@ import json.JobInput;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
+import org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator;
+import org.apache.commons.compress.archivers.zip.Zip64Mode;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.junit.jupiter.api.Test;
@@ -24,8 +28,8 @@ import xml.audit.AuditFile;
 import xml.audit.DataFile;
 import xml.audit.Header;
 import xml.audit.UnitOfWork;
-import xml.meta.*;
 import xml.meta.Record;
+import xml.meta.*;
 import xmlSample.MyDate;
 import xmlSample.Pet;
 import xmlSample.PetChild;
@@ -34,12 +38,17 @@ import xmlSample.PetChildChild;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -475,6 +484,102 @@ public class XmlTest {
                 }
             });
         }
+    }
+
+    //@Test
+    void callZipParallelAcrossMultipleFolders() {
+        List<List<String>> jobs = new ArrayList<>();
+        List<String> folders = new ArrayList<>();
+        String src = "C:\\Users\\Alex\\IdeaProjects\\tmmSimple\\tmmSimple\\src\\main\\resources\\pdfsrc";
+        String dest = "C:\\Users\\Alex\\IdeaProjects\\tmmSimple\\tmmSimple\\src\\main\\resources\\pdfsrc.zip";
+        folders.add(src);
+        folders.add(dest);
+        String src1 = "C:\\Users\\Alex\\IdeaProjects\\tmmSimple\\tmmSimple\\src\\main\\resources\\pdfsrc1";
+        String dest1 = "C:\\Users\\Alex\\IdeaProjects\\tmmSimple\\tmmSimple\\src\\main\\resources\\pdfsrc1.zip";
+        List<String> folders1 = new ArrayList<>();
+        folders1.add(src1);
+        folders1.add(dest1);
+        jobs.add(folders);
+        jobs.add(folders1);
+
+        jobs.stream().map(j -> CompletableFuture.runAsync(() -> {
+            try {
+                zipParallel(j.get(0), j.get(1));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        })).map(CompletableFuture::join)
+                .collect(Collectors.toList());
+    }
+
+    //@Test
+    void callZipParallel() throws IOException {
+        String src = "C:\\Users\\Alex\\IdeaProjects\\tmmSimple\\tmmSimple\\src\\main\\resources\\pdfsrc";
+        String dest = "C:\\Users\\Alex\\IdeaProjects\\tmmSimple\\tmmSimple\\src\\main\\resources\\pdfsrc.zip";
+        zipParallel(src, dest);
+    }
+
+
+    private void zipParallel(String sourceFolder, String zipFilePath) throws IOException {
+        log.info("starting zip");
+        ParallelScatterZipCreator scatterZipCreator = new ParallelScatterZipCreator();
+
+        //OutputStream outputStream = null;
+        // = null;
+        try(OutputStream outputStream = Files.newOutputStream(Paths.get(zipFilePath));
+            ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputStream)) {
+
+            //File srcFolder = new File(sourceFolder);
+            //if (srcFolder.isDirectory()) {
+            // uncomment following code if you want to add all files under srcFolder
+            //Iterator<File> fileIterator = Arrays.asList(srcFolder.listFiles()).iterator();
+
+
+            //File zipFile = new File(zipFilePath);
+            //zipFile.delete();
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.AsNeeded);
+
+            int srcFolderLength = Paths.get(sourceFolder)
+                    .toAbsolutePath().toString().length() + 1;  // +1 to remove the last file separator
+
+            //while (fileIterator.hasNext()) {
+            //    File file = fileIterator.next();
+
+            // uncomment following code if you want to add all files under srcFolder
+            //if (file.isDirectory()) {
+            //        continue;
+            //    }
+
+            try (Stream<Path> files = Files.list(Paths.get(sourceFolder))) {
+                files.forEach(file -> {
+                    String relativePath = file.toAbsolutePath().toString()
+                            .substring(srcFolderLength);
+
+                    InputStreamSupplier streamSupplier = () -> {
+                        InputStream is = null;
+                        try {
+                            is = Files.newInputStream(file);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return is;
+                    };
+                    ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(relativePath);
+                    zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
+                    scatterZipCreator.addArchiveEntry(zipArchiveEntry, streamSupplier);
+                });
+            }
+            scatterZipCreator.writeTo(zipArchiveOutputStream);
+            zipArchiveOutputStream.close();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //@Test
+    void availableProc() {
+        int i = Runtime.getRuntime().availableProcessors();
+        System.out.println(i);
     }
 
 }

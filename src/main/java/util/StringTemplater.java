@@ -1,9 +1,7 @@
 package util;
 
-import json.JobInput;
 import org.apache.commons.text.StringSubstitutor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class StringTemplater {
@@ -14,47 +12,51 @@ public class StringTemplater {
     private final String auditfileNameTemplate = "${doctype}.${archiveid}.${bookingcenter}..${date}.S${seqnum}.V${versionnum}.audit.xml";
     private final String controlfileNameTemplate = "${doctype}.${archiveid}.${bookingcenter}..${date}.S${seqnum}.V${versionnum}.control";
 
-    Map<String, String> parameters;
+    //Map<String, String> parameters;
 
-    public StringTemplater(JobInput jobInput) {
-        parameters = new HashMap<>();
-        parameters.put("doctype", jobInput.getDocType());
-        parameters.put("archiveid", jobInput.getArchiveId());
-        parameters.put("bookingcenter", jobInput.getBookingCenter());
-        parameters.put("date", jobInput.getDate());
-        parameters.put("versionnum", String.valueOf(jobInput.getVersionNum()));
+    //public StringTemplater(JobInput jobInput) {
+    //    parameters = new HashMap<>();
+    //    parameters.put("doctype", jobInput.getDocType());
+    //    parameters.put("archiveid", jobInput.getArchiveId());
+    //    parameters.put("bookingcenter", jobInput.getBookingCenter());
+    //    parameters.put("date", jobInput.getDate());
+    //    parameters.put("versionnum", String.valueOf(jobInput.getVersionNum()));
+    //}
+
+
+    public StringTemplater() {
     }
 
-    public Map<String, String> getParametersMap() {
-        return parameters;
-    }
+    //public Map<String, String> getParametersMap() {
+    //    return parameters;
+    //}
 
-    public String getFolderName() {
+    public String getFolderName(Map<String, String> parameters) {
         StringSubstitutor substitutor = new StringSubstitutor(parameters);
         return substitutor.replace(folderTemplate);
     }
 
-    public String getDatafileName() {
+    public String getDatafileName(Map<String, String> parameters) {
         StringSubstitutor substitutor = new StringSubstitutor(parameters);
         return substitutor.replace(datafileNameTemplate);
     }
 
-    public String getMetafileName() {
+    public String getMetafileName(Map<String, String> parameters) {
         StringSubstitutor substitutor = new StringSubstitutor(parameters);
         return substitutor.replace(metafileNameTemplate);
     }
 
-    public String getAuditfileName() {
+    public String getAuditfileName(Map<String, String> parameters) {
         StringSubstitutor substitutor = new StringSubstitutor(parameters);
         return substitutor.replace(auditfileNameTemplate);
     }
 
-    public String getControlfileName() {
+    public String getControlfileName(Map<String, String> parameters) {
         StringSubstitutor substitutor = new StringSubstitutor(parameters);
         return substitutor.replace(controlfileNameTemplate);
     }
 
-    public String getZipName() {
+    public String getZipName(Map<String, String> parameters) {
         StringSubstitutor substitutor = new StringSubstitutor(parameters);
         return substitutor.replace(zipTemplate);
     }

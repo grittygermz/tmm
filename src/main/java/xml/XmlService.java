@@ -6,14 +6,11 @@ import jakarta.xml.bind.Marshaller;
 import lombok.extern.slf4j.Slf4j;
 import xml.audit.AuditFile;
 import xml.audit.DataFile;
-import xml.audit.Header;
-import xml.audit.UnitOfWork;
-import xml.meta.*;
 import xml.meta.Record;
+import xml.meta.*;
 import xml.metaDTO.IndexKeys;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +18,8 @@ import java.util.List;
 public class XmlService {
     private Marshaller metaMarshaller;
     private Marshaller auditMarshaller;
-    private MetaFile metaFile;
-    private AuditFile auditFile;
+    //private MetaFile metaFile;
+    //private AuditFile auditFile;
 
     private void initMarshallers() throws JAXBException {
         JAXBContext jaxbContext1 = JAXBContext.newInstance(MetaFile.class);
@@ -35,7 +32,6 @@ public class XmlService {
     }
 
 
-
     public XmlService() {
         try {
             initMarshallers();
@@ -45,28 +41,44 @@ public class XmlService {
     }
 
     //TODO if file is large, is marshalling directly to file ok?
-    public void createXmlFile(FileType fileType, File outputFile) {
+    //public void createXmlFile(FileType fileType, File outputFile) {
+    //    try {
+    //        switch (fileType) {
+    //            case Meta:
+    //                metaMarshaller.marshal(metaFile, outputFile);
+    //                break;
+    //            case Audit:
+    //                auditMarshaller.marshal(auditFile, outputFile);
+    //                break;
+    //            default:
+    //                throw new RuntimeException("xml file couldnt be created");
+    //        }
+    //    } catch (JAXBException e) {
+    //        throw new RuntimeException(e);
+    //    }
+    //}
+
+    public void createAuditFile(AuditFile auditFile, File outputFile) {
         try {
-            switch (fileType) {
-                case Meta:
-                    metaMarshaller.marshal(metaFile, outputFile);
-                    break;
-                case Audit:
-                    auditMarshaller.marshal(auditFile, outputFile);
-                    break;
-                default:
-                    throw new RuntimeException("xml file couldnt be created");
-            }
+            auditMarshaller.marshal(auditFile, outputFile);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void initMetaFile() {
-        metaFile = new MetaFile(new ArrayList<>());
+    public void createMetaFile(MetaFile metaFile, File outputFile) {
+        try {
+            metaMarshaller.marshal(metaFile, outputFile);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void addRecordToMetaFile(IndexKeys indexKeys, String filename) {
+    //public void initMetaFile() {
+    //    metaFile = new MetaFile(new ArrayList<>());
+    //}
+
+    public void addRecordToMetaFile(IndexKeys indexKeys, String filename, MetaFile metaFile) {
         List<Key> keys = new ArrayList<>();
 
         //TODO is there a more dynamic way to do this?
@@ -75,6 +87,10 @@ public class XmlService {
         keys.add(new Key("KUNDENNR", indexKeys.getKUNDENNR()));
         keys.add(new Key("GPN", indexKeys.getGPN()));
         keys.add(new Key("MESSAGE_ID", indexKeys.getMESSAGE_ID()));
+        keys.add(new Key("DOCID", indexKeys.getDOCID()));
+        keys.add(new Key("TYPEOFMAILING", indexKeys.getTYPEOFMAILING()));
+        keys.add(new Key("TITLE", indexKeys.getTITLE()));
+        keys.add(new Key("JOBID", indexKeys.getJOBID()));
 
         MetaData metaData = new MetaData(new Index(keys));
         Position position = new Position(filename);
@@ -82,17 +98,17 @@ public class XmlService {
         metaFile.getRecords().add(new Record(metaData, position));
     }
 
-    public void initAuditFile(Header header, UnitOfWork uow) {
-        auditFile = new AuditFile(header, uow);
-    }
+    //public void initAuditFile(Header header, UnitOfWork uow) {
+    //    auditFile = new AuditFile(header, uow);
+    //}
 
     // used for datafile to uow
-    public void addUowDatafileContentsToAuditFile(DataFile dataFile) {
+    public void addUowDatafileContentsToAuditFile(DataFile dataFile, AuditFile auditFile) {
         auditFile.getUnitOfWork().getDataFile().add(dataFile);
     }
 
     // used for metafile to uow
-    public void addUowMetafileContentsToAuditFile(DataFile metaFile) {
+    public void addUowMetafileContentsToAuditFile(DataFile metaFile, AuditFile auditFile) {
         auditFile.getUnitOfWork().setMetaFile(metaFile);
     }
 

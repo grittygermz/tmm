@@ -6,9 +6,13 @@
   "date": "20240826",
   "versionNum": 1,
   "seqNumStart": 1,
-  "seqNumEnd": 2,
+  "seqNumEnd": 50,
   "maxFolderSizeMB": 2,
-  "maxDataFiles": 5,
+  "maxDataFiles": 3,
   "gpn": "43688280",
-  "message_id": "M1055"
+  "message_id": "M1055",
+  "docId": "docid",
+  "typeOfMailing": "massmailz",
+  "title": "mytitle",
+  "jobId": "myjid"
 }
