@@ -1,8 +1,12 @@
 package xml.audit;
 
-import jakarta.xml.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)

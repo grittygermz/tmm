@@ -7,9 +7,6 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import compute.model.ArchiveFolder;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 import json.JobInput;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
@@ -30,11 +27,10 @@ import xml.audit.Header;
 import xml.audit.UnitOfWork;
 import xml.meta.Record;
 import xml.meta.*;
-import xmlSample.MyDate;
-import xmlSample.Pet;
-import xmlSample.PetChild;
-import xmlSample.PetChildChild;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -45,7 +41,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -166,33 +161,6 @@ public class XmlTest {
         marshaller.marshal(auditFile, new File("./test3.xml"));
     }
 
-
-    // using jaxb directly
-    @Test
-    void handleXMLDocs1() throws JAXBException {
-        PetChildChild pcc1 = new PetChildChild(
-                "chewy1",
-                "sally toy",
-                4,
-                LocalDateTime.now(),
-                new MyDate(LocalDateTime.now()));
-        PetChildChild pcc2 = new PetChildChild("chewy2",
-                "elephant",
-                2,
-                LocalDateTime.now().minusHours(3),
-                new MyDate(LocalDateTime.now().minusMinutes(20)));
-
-        List<PetChildChild> pccList = new ArrayList<>();
-        pccList.add(pcc1);
-        pccList.add(pcc2);
-
-        PetChild petChild = new PetChild(pccList);
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(Pet.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(new Pet("cing-de-pom", "ginro", 3, petChild), new File("./test1.xml"));
-    }
 
     //@Test
     //void jsonToPojoPOC() throws JsonProcessingException {
@@ -421,9 +389,9 @@ public class XmlTest {
             Files.list(Paths.get(path))
                     .forEach(f -> {
                         String filePath = f.toAbsolutePath().toString();
-                        System.out.println("Zipping "+filePath);
+                        System.out.println("Zipping " + filePath);
                         //for ZipEntry we need to keep only relative file path, so we used substring on absolute path
-                        ZipEntry ze = new ZipEntry(filePath.substring(dir.getAbsolutePath().length()+1, filePath.length()));
+                        ZipEntry ze = new ZipEntry(filePath.substring(dir.getAbsolutePath().length() + 1, filePath.length()));
                         try {
                             zos.putNextEntry(ze);
                         } catch (IOException e) {
@@ -474,15 +442,15 @@ public class XmlTest {
             }
         });
 
-        try(Stream<Path> walk = Files.walk(Paths.get(path))) {
+        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
             walk.sorted(Comparator.reverseOrder())
                     .forEach(f -> {
-                try {
-                    Files.delete(f);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        try {
+                            Files.delete(f);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         }
     }
 
@@ -503,12 +471,12 @@ public class XmlTest {
         jobs.add(folders1);
 
         jobs.stream().map(j -> CompletableFuture.runAsync(() -> {
-            try {
-                zipParallel(j.get(0), j.get(1));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        })).map(CompletableFuture::join)
+                    try {
+                        zipParallel(j.get(0), j.get(1));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })).map(CompletableFuture::join)
                 .collect(Collectors.toList());
     }
 
@@ -526,8 +494,8 @@ public class XmlTest {
 
         //OutputStream outputStream = null;
         // = null;
-        try(OutputStream outputStream = Files.newOutputStream(Paths.get(zipFilePath));
-            ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputStream)) {
+        try (OutputStream outputStream = Files.newOutputStream(Paths.get(zipFilePath));
+             ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputStream)) {
 
             //File srcFolder = new File(sourceFolder);
             //if (srcFolder.isDirectory()) {
@@ -580,6 +548,65 @@ public class XmlTest {
     void availableProc() {
         int i = Runtime.getRuntime().availableProcessors();
         System.out.println(i);
+    }
+
+    @Test
+    void checkheapsize() {
+        long l = Runtime.getRuntime().maxMemory();
+        System.out.println(l);
+        //4 242 538 496
+    }
+
+    //@Test
+    void doUntilOOM() {
+        long l = Runtime.getRuntime().maxMemory();
+        System.out.println(l);
+        //4 242 538 496
+        System.out.println("start..");
+
+        long count = 0;
+        MetaFile metaFile = new MetaFile(new ArrayList<>());
+        while (true) {
+            try {
+                metaFile.getRecords().add(createRecordForMeta());
+                count++;
+            } catch (OutOfMemoryError e) {
+                break;
+            }
+        }
+        long l1 = Runtime.getRuntime().freeMemory();
+        long l2 = Runtime.getRuntime().maxMemory();
+        System.out.println(l1 + " " + l2);
+        System.out.println("number of objects created before OOM " + count);
+    }
+
+    private Record createRecordForMeta() {
+        Key key = new Key("LDD", "ginro");
+        Key key1 = new Key("BCNR", "haihai");
+        Key key2 = new Key("BCNR1", "haihai");
+        Key key3 = new Key("BCNR2", "haihai");
+        Key key4 = new Key("BCNR3", "haihai");
+        Key key5 = new Key("BCNR4", "haihai");
+        Key key6 = new Key("BCNR5", "haihai");
+        Key key7 = new Key("BCNR5", "haihai");
+        Key key8 = new Key("BCNR5", "haihai");
+        List<Key> keys = new ArrayList<>();
+        keys.add(key);
+        keys.add(key1);
+        keys.add(key2);
+        keys.add(key3);
+        keys.add(key4);
+        keys.add(key5);
+        keys.add(key6);
+        keys.add(key7);
+        keys.add(key8);
+
+        Position position = new Position("abcd.pdf");
+        MetaData metaData = new MetaData(new Index(keys));
+        Record record = new Record(metaData, position);
+
+        //17 889 203
+        return record;
     }
 
 }

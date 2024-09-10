@@ -1,8 +1,5 @@
 package xml;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 import lombok.extern.slf4j.Slf4j;
 import xml.audit.AuditFile;
 import xml.audit.DataFile;
@@ -10,6 +7,9 @@ import xml.meta.Record;
 import xml.meta.*;
 import xml.metaDTO.IndexKeys;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

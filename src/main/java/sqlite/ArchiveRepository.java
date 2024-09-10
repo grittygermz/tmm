@@ -10,17 +10,28 @@ import lombok.extern.slf4j.Slf4j;
 import sqlite.models.ArchivePack;
 import sqlite.models.ArchiveSeq;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
 public class ArchiveRepository {
 
-    private String databaseUrl = "jdbc:sqlite:sample.db";
+    String jarDir = new File(ArchiveRepository.class.getProtectionDomain().getCodeSource().getLocation()
+            .toURI()).getParentFile().getPath();
+
+    private String databaseUrl;
     private Dao<ArchivePack, String> archivePackDao;
     private Dao<ArchiveSeq, String> archiveSeqDao;
 
+    public ArchiveRepository() throws URISyntaxException {
+    }
+
     public void setupDatabase() {
+        String dbPath = Paths.get(jarDir, "sqlite.db").toAbsolutePath().toString();
+        databaseUrl = "jdbc:sqlite:" + dbPath;
         try (ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl)) {
 
             // instantiate the dao

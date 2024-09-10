@@ -1,6 +1,6 @@
 package xml.meta;
 
-import jakarta.xml.bind.annotation.*;
+import javax.xml.bind.annotation.*;
 import lombok.*;
 
 import java.util.List;

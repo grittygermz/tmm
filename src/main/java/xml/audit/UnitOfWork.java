@@ -1,13 +1,10 @@
 package xml.audit;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import xml.meta.MetaFile;
-import xml.meta.Record;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 

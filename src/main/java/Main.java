@@ -219,7 +219,7 @@ public class Main {
             Files.createDirectory(outputFolderPath);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            terminate();
+            throw new RuntimeException(e);
         }
 
         // iterate through map - key(pdf name), value(filesize)
@@ -239,7 +239,7 @@ public class Main {
                 Files.move(initialFilePath, outputFolderPath.resolve(datafilename), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                terminate();
+                throw new RuntimeException(e);
             }
 
             IndexKeys indexKeys = new IndexKeys(pdfMetadata.getLdd(), pdfMetadata.getBcnr(),
@@ -272,7 +272,7 @@ public class Main {
             xmlService.createAuditFile(auditFile, outputFolderPath.resolve(auditfilename).toFile());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            terminate();
+            throw new RuntimeException(e);
         }
 
         //TODO create as function in separate class?
@@ -282,7 +282,7 @@ public class Main {
             Files.createFile(outputFolderPath.resolve(controlfilename));
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            terminate();
+            throw new RuntimeException(e);
         }
 
         //do zipping

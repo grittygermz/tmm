@@ -1,10 +1,9 @@
 package xml.audit;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.*;
-import xml.meta.Record;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "AuditFile")
 @XmlAccessorType(XmlAccessType.NONE)
