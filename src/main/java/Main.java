@@ -49,7 +49,7 @@ public class Main {
 
             // read the input file
             //TODO change the path to jarDir
-            jarDir = "src/test/resources";
+            //jarDir = "src/test/resources";
             ObjectMapper objectMapper = ArchivingObjectMapper.getInstance();
             JobInput jobInput = null;
             try {
