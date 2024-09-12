@@ -49,7 +49,7 @@ public class Main {
 
             // read the input file
             //TODO change the path to jarDir
-            //jarDir = "src/test/resources";
+            jarDir = "src/test/resources";
             ObjectMapper objectMapper = ArchivingObjectMapper.getInstance();
             JobInput jobInput = null;
             try {
@@ -243,8 +243,7 @@ public class Main {
             }
 
             IndexKeys indexKeys = new IndexKeys(pdfMetadata.getLdd(), pdfMetadata.getBcnr(),
-                    pdfMetadata.getKudennr(), jobInput.getGPN(), jobInput.getMESSAGE_ID(),
-                    jobInput.getDocId(), jobInput.getTypeOfMailing(), jobInput.getTitle(),
+                    pdfMetadata.getKudennr(), jobInput.getDocId(), jobInput.getTypeOfMailing(), jobInput.getTitle(),
                     jobInput.getJobId());
             xmlService.addRecordToMetaFile(indexKeys, datafilename, metaFile);
 

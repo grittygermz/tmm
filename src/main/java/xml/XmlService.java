@@ -85,8 +85,6 @@ public class XmlService {
         keys.add(new Key("LDD", indexKeys.getLDD()));
         keys.add(new Key("BCNR", indexKeys.getBCNR()));
         keys.add(new Key("KUNDENNR", indexKeys.getKUNDENNR()));
-        keys.add(new Key("GPN", indexKeys.getGPN()));
-        keys.add(new Key("MESSAGE_ID", indexKeys.getMESSAGE_ID()));
         keys.add(new Key("DOCID", indexKeys.getDOCID()));
         keys.add(new Key("TYPEOFMAILING", indexKeys.getTYPEOFMAILING()));
         keys.add(new Key("TITLE", indexKeys.getTITLE()));
